@@ -2,6 +2,7 @@
 #Script runs as whoever is logged into the CF API. 
 from subprocess import check_output
 import json 
+import numbers
 
 orgs = json.loads(check_output(['cf', 'curl', '/v2/organizations']))
 
@@ -23,9 +24,11 @@ for org in orgs['resources']:
             instances = app['entity']['instances']
             memory = app['entity']['memory']
             consumed += (instances * memory)
-        print "\tSpace " + space['entity']['name'] + " is using " + str(consumed) + "MB memory (" + str(100 * consumed / quota_memeory_limit) + "%) of org quota"
-        
-
-                    
-
-
+            instances_url = app['metadata']['url'] + '/instances'
+            instances = json.loads(check_output(['cf', 'curl', instances_url]))
+            print instances
+#            for instance in instances:
+#                 if len(instance) == 1:
+#                     print instance
+#                state = instance['state']
+#                print "\tState is " + state + " for " + app['entity']['name']
